@@ -1,69 +1,67 @@
 import java.util.*;
 
-class Node {
-    String value;
-    List<Node> neighbors;
+class DLS {
+    private int V;
+    private LinkedList<Integer> adj[];
 
-    Node(String value) {
-        this.value = value;
-        this.neighbors = new ArrayList<>();
+    DLS(int v) {
+        V = v;
+        adj = new LinkedList[v];
+        for (int i = 0; i < v; ++i)
+            adj[i] = new LinkedList<>();
     }
 
-    void addNeighbor(Node neighbor) {
-        this.neighbors.add(neighbor);
-    }
-}
-
-public class DepthLimitedSearch {
-    public static void main(String[] args) {
-        // Creating nodes
-        Node root = new Node("A");
-        Node nodeB = new Node("B");
-        Node nodeC = new Node("C");
-        Node nodeD = new Node("D");
-        Node nodeE = new Node("E");
-        Node nodeF = new Node("F");
-        
-        // Connecting nodes
-        root.addNeighbor(nodeB);
-        root.addNeighbor(nodeC);
-        nodeB.addNeighbor(nodeD);
-        nodeB.addNeighbor(nodeE);
-        nodeC.addNeighbor(nodeF);
-
-        // Perform Depth-Limited Search
-        int limit = 2; // depth limit
-        String target = "E";
-        boolean found = depthLimitedSearch(root, target, limit);
-        
-        if (found) {
-            System.out.println("Target " + target + " found within depth limit " + limit);
-        } else {
-            System.out.println("Target " + target + " NOT found within depth limit " + limit);
-        }
+    void addEdge(int v, int w) {
+        adj[v].add(w);
     }
 
-    public static boolean depthLimitedSearch(Node node, String target, int limit) {
-        return dlsHelper(node, target, limit, 0);
+    boolean DLS_Traversal(int s, int d, int depthLimit) {
+        boolean visited[] = new boolean[V];
+        return DLSUtil(s, d, depthLimit, visited);
     }
 
-    private static boolean dlsHelper(Node node, String target, int limit, int depth) {
-        System.out.println("Visiting Node " + node.value + " at depth " + depth);
-        
-        if (node.value.equals(target)) {
+    boolean DLSUtil(int v, int d, int limit, boolean visited[]) {
+        if (v == d)
             return true;
-        }
-        
-        if (depth >= limit) {
+
+        if (limit <= 0)
             return false;
-        }
-        
-        for (Node neighbor : node.neighbors) {
-            if (dlsHelper(neighbor, target, limit, depth + 1)) {
+
+        visited[v] = true;
+
+        for (int n : adj[v]) {
+            if (!visited[n] && DLSUtil(n, d, limit - 1, visited))
                 return true;
-            }
         }
-        
         return false;
+    }
+
+    public static void main(String args[]) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Vertices: ");
+        int V = scanner.nextInt();
+        DLS g = new DLS(V);
+
+        System.out.print("Edges: ");
+        int E = scanner.nextInt();
+
+        System.out.println("Enter edges:");
+        for (int i = 0; i < E; i++) {
+            int v = scanner.nextInt();
+            int w = scanner.nextInt();
+            g.addEdge(v, w);
+        }
+
+        System.out.print("Source: ");
+        int source = scanner.nextInt();
+        System.out.print("Destination: ");
+        int destination = scanner.nextInt();
+        System.out.print("Depth Limit: ");
+        int depthLimit = scanner.nextInt();
+
+        System.out.println("Path exists within depth limit: " + g.DLS_Traversal(source, destination, depthLimit));
+
+        scanner.close();
     }
 }
