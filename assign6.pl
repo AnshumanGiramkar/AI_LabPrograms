@@ -71,4 +71,3 @@ coexists_peacefully(Animal1, Animal2) :-
     Animal1 \= Animal2,
     \+ preys_on(Animal1, Animal2),
     \+ preys_on(Animal2, Animal1).
-
